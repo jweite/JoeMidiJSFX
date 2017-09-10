@@ -1,0 +1,29 @@
+desc:Joe Midi Multi-Channel Filter
+//tags: MIDI processing
+
+slider1:1<1,16,1>Lower Channel
+slider2:1<1,16,1>Upper Channel
+
+// these lines tell Reaper the effect has no audio input/output,
+// which enables processing optimizations.
+// MIDI-only FX should always have these lines.
+in_pin:none
+out_pin:none
+
+@init
+
+@slider
+
+@block
+
+while 
+(
+  midirecv(offs, m1, m2) ?
+  (
+	c = m1&$xF; // channel
+	c >= (slider1-1) && c <= (slider2-1) ?
+	(
+      midisend(offs, m1, m2);
+	);
+  );
+);

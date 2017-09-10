@@ -1,0 +1,63 @@
+/*******************************************************************************
+*  Copyright 2017 Joseph Weitekamp                                             *
+*******************************************************************************/
+
+desc: Control Rotary Speed on VB3 with low A & B keys
+
+////////////////////////////////////////////////////////////////////////////////
+@init
+
+statNoteOn = $x90;
+statNoteOff = $x80;
+statControlChange = $xB0;
+noteNumberLowA = $x15;
+noteNumberLowB = notenumberLowA + 2;
+cc1 = $x0001;
+slow = $x0000;
+fast = $x7F00;
+
+////////////////////////////////////////////////////////////////////////////////
+@slider
+
+////////////////////////////////////////////////////////////////////////////////
+@block
+
+while
+(
+	midirecv(offset, msg1, msg23) ?
+	(	
+		// Extract message type and channel
+		status = msg1 & $xF0;
+		channel = msg1 & $x0F;
+			
+		// Is it a note event?
+		status == statNoteOn ?
+		(
+			// Extract note value
+			note = msg23 & $x7F;
+			
+			note == noteNumberLowA ?
+			(
+				midisend(offset, statControlChange | channel, cc1 | slow );
+			)
+			:
+			(
+				note == noteNumberLowB ?
+				(
+					midisend(offset, statControlChange | channel, cc1 | fast );
+				)
+				:
+				(
+					midisend(offset, msg1, msg23); // Not a note on: pass thru
+				)
+			)
+		)
+		:
+		(
+			midisend(offset, msg1, msg23); // Not a note on: pass thru
+		);
+			
+		1; // Force loop to continue until all messages have been processed
+	);
+);
+
