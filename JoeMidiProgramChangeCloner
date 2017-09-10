@@ -1,0 +1,28 @@
+desc:Clones a program change message onto a range of channels. Passes through the incoming pgm change (and everything else).
+
+slider1:1<1,16,1>Highest Channel
+slider2:1<1,16,1>Lowest Channel
+
+@init
+
+PROGRAM_CHANGE = $xC0;
+
+@block
+
+  while (
+    input = midirecv(mpos, msg1, msg23);
+    input ? (
+      midisend(mpos, msg1, msg23);
+
+      cmd = msg1 & $xF0;
+
+
+	  cmd == PROGRAM_CHANGE ? (
+         i = slider2 - 1;
+         while ( i < slider1 ) (
+            midisend(mpos, cmd + 1, msg23);
+            i += 1;
+         );
+	  );
+	);
+  );
