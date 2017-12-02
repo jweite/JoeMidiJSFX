@@ -1,5 +1,7 @@
 /*******************************************************************************
-*  Copyright 2017 Joseph Weitekamp                                             *
+*  Copyright 2017 Joseph Weitekamp                
+*    12/2/17:  Added control message (1) control of rotary for PX3
+*
 *******************************************************************************/
 
 desc: Control Rotary Speed on VB3 with low A & B keys
@@ -36,25 +38,61 @@ while
 			// Extract note value
 			note = msg23 & $x7F;
 			
+			// Low A: set rotary slow
 			note == noteNumberLowA ?
 			(
 				midisend(offset, statControlChange | channel, cc1 | slow );
 			)
 			:
 			(
+				// Low B: set rotary fast
 				note == noteNumberLowB ?
 				(
 					midisend(offset, statControlChange | channel, cc1 | fast );
 				)
 				:
 				(
-					midisend(offset, msg1, msg23); // Not a note on: pass thru
+					// All other notes: pass through
+					midisend(offset, msg1, msg23);
 				)
 			)
 		)
 		:
 		(
-			midisend(offset, msg1, msg23); // Not a note on: pass thru
+			// Is it a control event?
+			status == statControlChange ?
+			(
+				// Extract control number
+				ctlNum = msg23 & $x7F;
+				
+				// ctl1: control rotary
+				ctlNum == 1 ?
+				(
+					// Extract control value
+					ctlVal = (msg23/256)|0;
+					
+					// 0: Set Rotary Slow
+					ctlVal == 0 ?
+					(
+						midisend(offset, statControlChange | channel, cc1 | slow );
+					)
+					:
+					(
+						// non-zero: Set Rotary Fast
+						midisend(offset, statControlChange | channel, cc1 | fast );
+					)
+				)
+				:
+				(
+					// All other controls: passthrough
+					midisend(offset, msg1, msg23);
+				)
+			)
+			:
+			(
+				// All other statuses: passthrough
+				midisend(offset, msg1, msg23);
+			)
 		);
 			
 		1; // Force loop to continue until all messages have been processed
