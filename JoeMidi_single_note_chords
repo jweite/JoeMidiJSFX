@@ -1,0 +1,175 @@
+/*******************************************************************************
+*  Copyright 2023 Joseph Weitekamp                                             *
+*******************************************************************************/
+
+desc:Joe Midi Single Note Chords
+tags:MIDI processing
+
+slider1:trigger1=60<0,127,1>Chord 1 Trigger Note
+slider2:chord1_note1=-1<-1,127,1>Chord 1 Note 1
+slider3:chord1_note2=-1<-1,127,1>Chord 1 Note 2
+slider4:chord1_note3=-1<-1,127,1>Chord 1 Note 3
+slider5:chord1_note4=-1<-1,127,1>Chord 1 Note 4
+
+slider6:trigger2=60<0,127,1>Chord 2 Trigger Note
+slider7:chord2_note1=-1<-1,127,1>Chord 2 Note 1
+slider8:chord2_note2=-1<-1,127,1>Chord 2 Note 2
+slider9:chord2_note3=-1<-1,127,1>Chord 2 Note 3
+slider10:chord2_note4=-1<-1,127,1>Chord 2 Note 4
+
+slider11:trigger3=60<0,127,1>Chord 3 Trigger Note
+slider12:chord3_note1=-1<-1,127,1>Chord 3 Note 1
+slider13:chord3_note2=-1<-1,127,1>Chord 3 Note 2
+slider14:chord3_note3=-1<-1,127,1>Chord 3 Note 3
+slider15:chord3_note4=-1<-1,127,1>Chord 3 Note 4
+
+slider16:trigger4=60<0,127,1>Chord 4 Trigger Note
+slider17:chord4_note1=-1<-1,127,1>Chord 4 Note 1
+slider18:chord4_note2=-1<-1,127,1>Chord 4 Note 2
+slider19:chord4_note3=-1<-1,127,1>Chord 4 Note 3
+slider20:chord4_note4=-1<-1,127,1>Chord 4 Note 4
+
+slider21:trigger5=60<0,127,1>Chord 5 Trigger Note
+slider22:chord5_note1=-1<-1,127,1>Chord 5 Note 1
+slider23:chord5_note2=-1<-1,127,1>Chord 5 Note 2
+slider24:chord5_note3=-1<-1,127,1>Chord 5 Note 3
+slider25:chord5_note4=-1<-1,127,1>Chord 5 Note 4
+
+// slider26:debug=-1<-1,127,1>Debug
+
+// these lines tell Reaper the effect has no audio input/output,
+// which enables processing optimizations.
+// MIDI-only FX should always have these lines.
+in_pin:none
+out_pin:none
+
+@init
+statNoteOn = $x90;
+statNoteOff = $x80;
+
+@slider
+
+@block
+
+while 
+(
+  midirecv(offs, m1, m2, m3) ?
+  (  
+	// Extract message type and channel
+	status = m1 & $xF0;
+		
+	// Is it a note event?
+	status == statNoteOn || status == statNoteOff ?
+	(
+		sentChord = 0;
+		
+		m2 == trigger1 ?
+		(
+			chord1_note1 >= 0 ? (
+				sentChord = 1;
+				midisend(offs, m1, chord1_note1, m3);
+			);
+			chord1_note2 >= 0 ? (
+				sentChord = 1;
+				midisend(offs, m1, chord1_note2, m3);
+			);
+			chord1_note3 >= 0 ? (
+				sentChord = 1;
+				midisend(offs, m1, chord1_note3, m3);
+			);
+			chord1_note4 >= 0 ? (
+				sentChord = 1;
+				midisend(offs, m1, chord1_note4, m3);
+			);
+		);
+		
+		m2 == trigger2 ?
+		(
+			chord2_note1 >= 0 ? (
+				sentChord = 1;
+				midisend(offs, m1, chord2_note1, m3);
+			);
+			chord2_note2 >= 0 ? (
+				sentChord = 1;
+				midisend(offs, m1, chord2_note2, m3);
+			);
+			chord2_note3 >= 0 ? (
+				sentChord = 1;
+				midisend(offs, m1, chord2_note3, m3);
+			);
+			chord2_note4 >= 0 ? (
+				sentChord = 1;
+				midisend(offs, m1, chord2_note4, m3);
+			);
+		);
+		
+		m2 == trigger3 ?
+		(
+			chord3_note1 >= 0 ? (
+				sentChord = 1;
+				midisend(offs, m1, chord3_note1, m3);
+			);
+			chord3_note2 >= 0 ? (
+				sentChord = 1;
+				midisend(offs, m1, chord3_note2, m3);
+			);
+			chord3_note3 >= 0 ? (
+				sentChord = 1;
+				midisend(offs, m1, chord3_note3, m3);
+			);
+			chord3_note4 >= 0 ? (
+				sentChord = 1;
+				midisend(offs, m1, chord3_note4, m3);
+			);
+		);
+
+		m2 == trigger4 ?
+		(
+			chord4_note1 >= 0 ? (
+				sentChord = 1;
+				midisend(offs, m1, chord4_note1, m3);
+			);
+			chord4_note2 >= 0 ? (
+				sentChord = 1;
+				midisend(offs, m1, chord4_note2, m3);
+			);
+			chord4_note3 >= 0 ? (
+				sentChord = 1;
+				midisend(offs, m1, chord4_note3, m3);
+			);
+			chord4_note4 >= 0 ? (
+				sentChord = 1;
+				midisend(offs, m1, chord4_note4, m3);
+			);
+		);
+
+		m2 == trigger5 ?
+		(
+			chord5_note1 >= 0 ? (
+				sentChord = 1;
+				midisend(offs, m1, chord5_note1, m3);
+			);
+			chord5_note2 >= 0 ? (
+				sentChord = 1;
+				midisend(offs, m1, chord5_note2, m3);
+			);
+			chord5_note3 >= 0 ? (
+				sentChord = 1;
+				midisend(offs, m1, chord5_note3, m3);
+			);
+			chord5_note4 >= 0 ? (
+				sentChord = 1;
+				midisend(offs, m1, chord5_note4, m3);
+			);
+		);
+
+		sentChord == 0 ?
+		(
+			midisend(offs, m1, m2, m3);
+		);			
+	)
+	: (
+		midisend(offs, m1, m2, m3);
+	);
+  );
+);
